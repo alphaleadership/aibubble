@@ -21,9 +21,7 @@ const App: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // AI Generation States
-  const [prompt, setPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generationError, setGenerationError] = useState<string | null>(null);
+
 
   // Responsive dimensions
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
