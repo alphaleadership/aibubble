@@ -4,7 +4,7 @@ import CompanyDetails from './components/CompanyDetails';
 import AddNodeModal from './components/AddNodeModal';
 import { INITIAL_DATA } from './constants';
 import { GraphData, NodeData, HealthStatus } from './types';
-import { generateScenarioData, analyzeConsequences } from './services/geminiService';
+
 import { Loader2, RefreshCw, Send, AlertTriangle, Plus, Download, Upload, Filter, Banknote, Cpu, Network } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -113,25 +113,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleGenerateScenario = async () => {
-    if (!prompt.trim()) return;
-    setIsGenerating(true);
-    setGenerationError(null);
-    try {
-        const newData = await generateScenarioData(prompt);
-        if (newData) {
-            setData(newData);
-            setSelectedNode(null);
-            setSimAnalysis(null);
-        } else {
-            setGenerationError("L'IA n'a pas pu générer un graphe valide. Essayez une autre description.");
-        }
-    } catch (e) {
-        setGenerationError("Erreur de connexion API.");
-    } finally {
-        setIsGenerating(false);
-    }
-  };
+
 
   const runSimulation = useCallback(async (startNodeId: string) => {
     setIsSimulating(true);
@@ -301,32 +283,7 @@ const App: React.FC = () => {
       <div className="flex flex-1 overflow-hidden relative">
         
         {/* Floating Input for GenAI */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-xl pointer-events-none">
-           <div className="mx-4 pointer-events-auto">
-                <div className="flex items-center gap-2 p-1 bg-slate-900/90 backdrop-blur border border-slate-700 rounded-lg shadow-2xl ring-1 ring-white/10">
-                    <input 
-                        type="text" 
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Générer un scénario (ex: Faillite des fabricants de puces...)"
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-slate-200 placeholder-slate-500 min-w-0"
-                        onKeyDown={(e) => e.key === 'Enter' && handleGenerateScenario()}
-                    />
-                    <button 
-                        onClick={handleGenerateScenario}
-                        disabled={isGenerating}
-                        className="p-2 bg-gradient-to-br from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md disabled:opacity-50 transition-all shadow-lg"
-                    >
-                        {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
-                    </button>
-                </div>
-                {generationError && (
-                    <div className="mt-2 text-xs text-red-400 bg-red-900/20 px-3 py-1 rounded border border-red-900/50">
-                        {generationError}
-                    </div>
-                )}
-           </div>
-        </div>
+        
         
         {/* Mobile View Filters (visible only on small screens) */}
         <div className="absolute top-20 left-4 z-20 md:hidden flex flex-col gap-2">

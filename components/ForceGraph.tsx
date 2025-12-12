@@ -34,7 +34,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
 
   const renderGraph = useCallback(() => {
     if (!svgRef.current) return;
-
+    console.log(data)
     // Filter links based on mode
     const filteredLinks = data.links.filter(l => {
         if (filterMode === 'financial') return l.type === 'investment';

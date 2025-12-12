@@ -1,4 +1,4 @@
-{"companiesData":{
+{
 "nodes": [
     { "id": "nvidia", "name": "Nvidia", "type": "Infrastructure", "valuation": 2200, "cashReserve": 500, "currentHealth": 100, "status": "Healthy", "description": "Fournisseur mondial de GPU." },
     { "id": "microsoft", "name": "Microsoft", "type": "Cloud Provider", "valuation": 3000, "cashReserve": 800, "currentHealth": 100, "status": "Healthy", "description": "Géant du cloud et actionnaire majeur." },
@@ -28,4 +28,3 @@
   ]
 }
   
-}
