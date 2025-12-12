@@ -1,0 +1,5 @@
+{
+  "name": "AI Risk Nexus",
+  "description": "Visualisation des risques systémiques et liens financiers dans le secteur de l'IA avec simulation de contagion.",
+  "requestFramePermissions": []
+}
