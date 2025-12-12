@@ -1,16 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ForceGraph from './components/ForceGraph';
 import CompanyDetails from './components/CompanyDetails';
+import AddNodeModal from './components/AddNodeModal';
 import { INITIAL_DATA } from './constants';
 import { GraphData, NodeData, HealthStatus } from './types';
 import { generateScenarioData, analyzeConsequences } from './services/geminiService';
-import { Loader2, RefreshCw, Send, AlertTriangle } from 'lucide-react';
+import { Loader2, RefreshCw, Send, AlertTriangle, Plus, Download, Upload, Filter, Banknote, Cpu, Network } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<GraphData>(INITIAL_DATA);
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [simAnalysis, setSimAnalysis] = useState<string | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+  // Filter View State
+  const [viewMode, setViewMode] = useState<'all' | 'financial' | 'tech'>('all');
+  
+  // Ref for file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // AI Generation States
   const [prompt, setPrompt] = useState("");
@@ -39,8 +47,60 @@ const App: React.FC = () => {
     setSelectedNode(node);
   };
 
+  const handleUpdateNode = (updatedNode: NodeData) => {
+      setData(prev => ({
+          ...prev,
+          nodes: prev.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
+      }));
+      setSelectedNode(updatedNode);
+  };
+
+  const handleAddNode = (newNode: NodeData) => {
+      setData(prev => ({
+          ...prev,
+          nodes: [...prev.nodes, newNode]
+      }));
+      setSelectedNode(newNode);
+  };
+
+  const handleExportJSON = () => {
+      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+        JSON.stringify(data, null, 2)
+      )}`;
+      const link = document.createElement("a");
+      link.href = jsonString;
+      link.download = "companies.json";
+      link.click();
+  };
+
+  const handleImportJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const fileReader = new FileReader();
+      if (event.target.files && event.target.files[0]) {
+          fileReader.readAsText(event.target.files[0], "UTF-8");
+          fileReader.onload = e => {
+              if (e.target?.result) {
+                  try {
+                      const parsedData = JSON.parse(e.target.result as string);
+                      // Simple check to ensure it looks like our data
+                      if (parsedData.nodes && parsedData.links) {
+                          setData(parsedData);
+                          setSelectedNode(null);
+                          setSimAnalysis(null);
+                      } else {
+                          alert("Fichier JSON invalide : Structure incorrecte.");
+                      }
+                  } catch (error) {
+                      console.error("Invalid JSON", error);
+                      alert("Erreur lors de la lecture du fichier JSON.");
+                  }
+              }
+          };
+      }
+      // Reset input so same file can be selected again
+      if (event.target) event.target.value = '';
+  };
+
   const resetSimulation = () => {
-    // Restore health to original state based on node ID matching initial data logic or current dataset reset
     const resetNodes = data.nodes.map(n => ({
         ...n,
         currentHealth: 100,
@@ -76,21 +136,11 @@ const App: React.FC = () => {
   const runSimulation = useCallback(async (startNodeId: string) => {
     setIsSimulating(true);
     
-    // We will simulate a cascade.
-    // Logic: 
-    // 1. Reduce startNode health to 0.
-    // 2. Find nodes that have 'source' pointing to startNode (startNode is target).
-    //    Actually, if Source invests in Target, and Target dies: Source loses money.
-    //    If Source relies on Target (dependency), and Target dies: Source is stressed.
-    //    We need to check links where target === startNodeId.
-    
     let currentNodes = [...data.nodes];
     let impactedNodeIds = new Set<string>();
     
-    // Helper to find node index
     const findIdx = (id: string) => currentNodes.findIndex(n => n.id === id);
 
-    // Step 1: Kill the patient zero
     const patientZeroIdx = findIdx(startNodeId);
     if (patientZeroIdx === -1) return;
 
@@ -102,22 +152,17 @@ const App: React.FC = () => {
     impactedNodeIds.add(currentNodes[patientZeroIdx].name);
 
     setData({ ...data, nodes: [...currentNodes] });
-    // Update selected view if needed
     if (selectedNode?.id === startNodeId) setSelectedNode(currentNodes[patientZeroIdx]);
 
-    // Step 2: Propagate
-    // Simple 1-step propagation for visual effect, can be made recursive
-    // Wait a bit for visual effect
     await new Promise(r => setTimeout(r, 800));
 
     let iteration = 0;
     let unstable = true;
 
-    while (unstable && iteration < 3) { // Limit iterations to prevent infinite loops
+    while (unstable && iteration < 3) {
         unstable = false;
         const newNodes = [...currentNodes];
         
-        // Check all links
         for (const link of data.links) {
             const targetId = typeof link.target === 'object' ? (link.target as any).id : link.target;
             const sourceId = typeof link.source === 'object' ? (link.source as any).id : link.source;
@@ -127,9 +172,7 @@ const App: React.FC = () => {
 
             if (!targetNode || !sourceNode) continue;
 
-            // Scenario A: Investment loss. Source invested in Target. Target is Dead.
             if (link.type === 'investment' && targetNode.status === HealthStatus.BANKRUPT && sourceNode.status !== HealthStatus.BANKRUPT) {
-                // Source loses the value
                 const damage = (link.value / sourceNode.cashReserve) * 100; 
                 sourceNode.currentHealth -= damage;
                 
@@ -137,16 +180,14 @@ const App: React.FC = () => {
                     sourceNode.currentHealth = 0;
                     sourceNode.status = HealthStatus.BANKRUPT;
                     impactedNodeIds.add(sourceNode.name);
-                    unstable = true; // Changes happened, need re-evaluation
+                    unstable = true;
                 } else if (sourceNode.currentHealth < 50) {
                     sourceNode.status = HealthStatus.STRESSED;
                 }
             }
 
-            // Scenario B: Tech Dependency. Source depends on Target. Target is Dead.
             if (link.type === 'dependency' && targetNode.status === HealthStatus.BANKRUPT && sourceNode.status !== HealthStatus.BANKRUPT) {
-                // Massive operational hit
-                const damage = 40; // Flat 40% health hit for critical dependency failure
+                const damage = 40;
                 sourceNode.currentHealth -= damage;
 
                  if (sourceNode.currentHealth <= 0) {
@@ -155,14 +196,13 @@ const App: React.FC = () => {
                     impactedNodeIds.add(sourceNode.name);
                     unstable = true;
                 } else {
-                    sourceNode.status = HealthStatus.STRESSED; // Almost always stressed if provider fails
+                    sourceNode.status = HealthStatus.STRESSED;
                 }
             }
         }
         
         currentNodes = newNodes;
         setData({ ...data, nodes: [...currentNodes] });
-        // Refresh selected node if it changed
         if (selectedNode) {
              const updatedSelected = currentNodes.find(n => n.id === selectedNode.id);
              if (updatedSelected) setSelectedNode(updatedSelected);
@@ -171,7 +211,6 @@ const App: React.FC = () => {
         iteration++;
     }
 
-    // After simulation, ask Gemini for analysis
     const analysis = await analyzeConsequences(currentNodes[patientZeroIdx].name, Array.from(impactedNodeIds));
     setSimAnalysis(analysis);
 
@@ -186,16 +225,74 @@ const App: React.FC = () => {
           <div className="w-8 h-8 rounded bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-900/50">
             AI
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-100">Risk Nexus <span className="text-slate-500 font-normal">| Simulateur de Contagion Financière</span></h1>
+          <h1 className="text-xl font-bold tracking-tight text-slate-100 hidden md:block">Risk Nexus <span className="text-slate-500 font-normal">| Simulateur</span></h1>
         </div>
         
-        <div className="flex items-center gap-4">
+        {/* View Filters */}
+        <div className="hidden md:flex bg-slate-800/50 p-1 rounded-lg border border-slate-700">
+            <button 
+                onClick={() => setViewMode('all')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all ${viewMode === 'all' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+            >
+                <Network size={14} /> Tout
+            </button>
+            <button 
+                onClick={() => setViewMode('financial')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all ${viewMode === 'financial' ? 'bg-emerald-900/50 text-emerald-400 shadow-sm border border-emerald-500/20' : 'text-slate-400 hover:text-emerald-300'}`}
+            >
+                <Banknote size={14} /> Finance
+            </button>
+            <button 
+                onClick={() => setViewMode('tech')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm transition-all ${viewMode === 'tech' ? 'bg-violet-900/50 text-violet-400 shadow-sm border border-violet-500/20' : 'text-slate-400 hover:text-violet-300'}`}
+            >
+                <Cpu size={14} /> Tech
+            </button>
+        </div>
+        
+        <div className="flex items-center gap-3">
+             <button 
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-white text-sm font-bold shadow-lg shadow-blue-900/20 transition-colors"
+             >
+                <Plus size={16} />
+                <span className="hidden sm:inline">Ajouter</span>
+             </button>
+             
+             <div className="h-6 w-px bg-slate-700 mx-1"></div>
+
+             <input 
+               type="file" 
+               accept=".json" 
+               ref={fileInputRef} 
+               onChange={handleImportJSON} 
+               className="hidden" 
+             />
+             
+             <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-sm transition-colors text-slate-300 hover:text-white"
+                title="Importer JSON"
+             >
+                <Upload size={14} />
+             </button>
+
+             <button 
+                onClick={handleExportJSON}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-sm transition-colors text-slate-300 hover:text-white"
+                title="Exporter JSON"
+             >
+                <Download size={14} />
+             </button>
+
+             <div className="h-6 w-px bg-slate-700 mx-1"></div>
+             
              <button 
                 onClick={resetSimulation}
                 className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded border border-slate-700 text-sm transition-colors"
              >
                 <RefreshCw size={14} />
-                Réinitialiser
+                <span className="hidden sm:inline">Reset</span>
              </button>
         </div>
       </header>
@@ -204,21 +301,21 @@ const App: React.FC = () => {
       <div className="flex flex-1 overflow-hidden relative">
         
         {/* Floating Input for GenAI */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-xl">
-           <div className="mx-4">
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 w-full max-w-xl pointer-events-none">
+           <div className="mx-4 pointer-events-auto">
                 <div className="flex items-center gap-2 p-1 bg-slate-900/90 backdrop-blur border border-slate-700 rounded-lg shadow-2xl ring-1 ring-white/10">
                     <input 
                         type="text" 
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Décrivez un scénario (ex: L'impact de la faillite de Nvidia sur les startups IA...)"
-                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-slate-200 placeholder-slate-500"
+                        placeholder="Générer un scénario (ex: Faillite des fabricants de puces...)"
+                        className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-slate-200 placeholder-slate-500 min-w-0"
                         onKeyDown={(e) => e.key === 'Enter' && handleGenerateScenario()}
                     />
                     <button 
                         onClick={handleGenerateScenario}
                         disabled={isGenerating}
-                        className="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md disabled:opacity-50 transition-colors"
+                        className="p-2 bg-gradient-to-br from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md disabled:opacity-50 transition-all shadow-lg"
                     >
                         {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
                     </button>
@@ -230,6 +327,16 @@ const App: React.FC = () => {
                 )}
            </div>
         </div>
+        
+        {/* Mobile View Filters (visible only on small screens) */}
+        <div className="absolute top-20 left-4 z-20 md:hidden flex flex-col gap-2">
+            <button onClick={() => setViewMode(viewMode === 'financial' ? 'all' : 'financial')} className={`p-2 rounded-full shadow-lg ${viewMode === 'financial' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                <Banknote size={20} />
+            </button>
+            <button onClick={() => setViewMode(viewMode === 'tech' ? 'all' : 'tech')} className={`p-2 rounded-full shadow-lg ${viewMode === 'tech' ? 'bg-violet-600 text-white' : 'bg-slate-800 text-slate-400'}`}>
+                <Cpu size={20} />
+            </button>
+        </div>
 
         {/* Graph Area */}
         <div className="flex-1 relative bg-slate-950" ref={graphContainerRef}>
@@ -238,11 +345,12 @@ const App: React.FC = () => {
              width={dimensions.width} 
              height={dimensions.height} 
              onNodeClick={handleNodeClick}
+             filterMode={viewMode}
            />
            
            {/* Simulation Analysis Toast */}
            {simAnalysis && (
-               <div className="absolute bottom-6 left-6 right-6 md:left-auto md:right-auto md:w-96 bg-slate-900/95 border border-red-500/30 text-slate-200 p-4 rounded-lg shadow-2xl backdrop-blur animate-in slide-in-from-bottom-5">
+               <div className="absolute bottom-6 left-6 right-6 md:left-auto md:right-auto md:w-96 bg-slate-900/95 border border-red-500/30 text-slate-200 p-4 rounded-lg shadow-2xl backdrop-blur animate-in slide-in-from-bottom-5 z-30">
                    <div className="flex items-start gap-3">
                        <AlertTriangle className="text-red-500 shrink-0 mt-1" size={20} />
                        <div>
@@ -258,9 +366,17 @@ const App: React.FC = () => {
         <CompanyDetails 
             node={selectedNode} 
             onKill={runSimulation}
+            onUpdate={handleUpdateNode}
             isSimulating={isSimulating}
         />
       </div>
+
+      {/* Modals */}
+      <AddNodeModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)} 
+        onAdd={handleAddNode} 
+      />
     </div>
   );
 };
