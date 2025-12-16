@@ -1,104 +1,104 @@
 {
   "nodes": [
     {
-      "id": "nvidia",
-      "name": "Nvidia",
+      "id": "node-0",
       "type": "Infrastructure",
       "valuation": 2200,
       "cashReserve": 500,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Fournisseur mondial de GPU."
+      "description": "Fournisseur mondial de GPU.",
+      "index": 0
     },
     {
-      "id": "microsoft",
-      "name": "Microsoft",
+      "id": "node-1",
       "type": "Cloud Provider",
       "valuation": 3000,
       "cashReserve": 800,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Géant du cloud et actionnaire majeur."
+      "description": "Géant du cloud et actionnaire majeur.",
+      "index": 1
     },
     {
-      "id": "openai",
-      "name": "OpenAI",
+      "id": "node-2",
       "type": "Model Lab",
       "valuation": 80,
       "cashReserve": 10,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Créateur de GPT-4."
+      "description": "Créateur de GPT-4.",
+      "index": 2
     },
     {
-      "id": "anthropic",
-      "name": "Anthropic",
+      "id": "node-3",
       "type": "Model Lab",
       "valuation": 18,
       "cashReserve": 5,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Sécurité de l'IA et Claude."
+      "description": "Sécurité de l'IA et Claude.",
+      "index": 3
     },
     {
-      "id": "google",
-      "name": "Google",
+      "id": "node-4",
       "type": "Cloud Provider",
       "valuation": 1700,
       "cashReserve": 400,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "DeepMind et TPU infrastructure."
+      "description": "DeepMind et TPU infrastructure.",
+      "index": 4
     },
     {
-      "id": "amazon",
-      "name": "Amazon",
+      "id": "node-5",
       "type": "Cloud Provider",
       "valuation": 1800,
       "cashReserve": 450,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "AWS et investisseur Anthropic."
+      "description": "AWS et investisseur Anthropic.",
+      "index": 5
     },
     {
-      "id": "meta",
-      "name": "Meta",
+      "id": "node-6",
       "type": "Application",
       "valuation": 1200,
       "cashReserve": 300,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Open Source Llama models."
+      "description": "Open Source Llama models.",
+      "index": 6
     },
     {
-      "id": "tsmc",
-      "name": "TSMC",
+      "id": "node-7",
       "type": "Infrastructure",
       "valuation": 600,
       "cashReserve": 200,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Fonderie de puces essentielle."
+      "description": "Fonderie de puces essentielle.",
+      "index": 7
     },
     {
-      "id": "mistral",
-      "name": "Mistral AI",
+      "id": "node-8",
       "type": "Model Lab",
       "valuation": 2,
       "cashReserve": 0.5,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Champion européen de l'open weight."
+      "description": "Champion européen de l'open weight.",
+      "index": 8
     },
     {
-      "id": "softbank",
-      "name": "Softbank",
+      "id": "node-9",
       "type": "VC / Holding",
       "valuation": 100,
       "cashReserve": 30,
       "currentHealth": 100,
       "status": "Healthy",
-      "description": "Investisseur tech majeur."
+      "description": "Investisseur tech majeur.",
+      "index": 9
     }
   ],
   "links": [
@@ -108,7 +108,8 @@
       "value": 13,
       "type": "investment",
       "id": "link-0",
-      "name": "microsoft to openai"
+      "name": "microsoft to openai",
+      "index": 0
     },
     {
       "source": "openai",
@@ -116,7 +117,8 @@
       "value": 5,
       "type": "dependency",
       "id": "link-1",
-      "name": "openai to nvidia"
+      "name": "openai to nvidia",
+      "index": 1
     },
     {
       "source": "openai",
@@ -124,7 +126,8 @@
       "value": 4,
       "type": "dependency",
       "id": "link-2",
-      "name": "openai to microsoft"
+      "name": "openai to microsoft",
+      "index": 2
     },
     {
       "source": "amazon",
@@ -132,7 +135,8 @@
       "value": 4,
       "type": "investment",
       "id": "link-3",
-      "name": "amazon to anthropic"
+      "name": "amazon to anthropic",
+      "index": 3
     },
     {
       "source": "google",
@@ -140,7 +144,8 @@
       "value": 2,
       "type": "investment",
       "id": "link-4",
-      "name": "google to anthropic"
+      "name": "google to anthropic",
+      "index": 4
     },
     {
       "source": "anthropic",
@@ -148,7 +153,8 @@
       "value": 1.5,
       "type": "dependency",
       "id": "link-5",
-      "name": "anthropic to google"
+      "name": "anthropic to google",
+      "index": 5
     },
     {
       "source": "nvidia",
@@ -156,7 +162,8 @@
       "value": 20,
       "type": "dependency",
       "id": "link-6",
-      "name": "nvidia to tsmc"
+      "name": "nvidia to tsmc",
+      "index": 6
     },
     {
       "source": "microsoft",
@@ -164,7 +171,8 @@
       "value": 15,
       "type": "dependency",
       "id": "link-7",
-      "name": "microsoft to nvidia"
+      "name": "microsoft to nvidia",
+      "index": 7
     },
     {
       "source": "google",
@@ -172,7 +180,8 @@
       "value": 10,
       "type": "dependency",
       "id": "link-8",
-      "name": "google to nvidia"
+      "name": "google to nvidia",
+      "index": 8
     },
     {
       "source": "meta",
@@ -180,7 +189,8 @@
       "value": 12,
       "type": "dependency",
       "id": "link-9",
-      "name": "meta to nvidia"
+      "name": "meta to nvidia",
+      "index": 9
     },
     {
       "source": "softbank",
@@ -188,7 +198,8 @@
       "value": 1,
       "type": "investment",
       "id": "link-10",
-      "name": "softbank to nvidia"
+      "name": "softbank to nvidia",
+      "index": 10
     },
     {
       "source": "microsoft",
@@ -196,7 +207,8 @@
       "value": 0.2,
       "type": "investment",
       "id": "link-11",
-      "name": "microsoft to mistral"
+      "name": "microsoft to mistral",
+      "index": 11
     },
     {
       "source": "nvidia",
@@ -204,7 +216,8 @@
       "value": 0.1,
       "type": "partnership",
       "id": "link-12",
-      "name": "nvidia to mistral"
+      "name": "nvidia to mistral",
+      "index": 12
     }
   ]
 }

@@ -21,6 +21,7 @@ export interface NodeData {
   currentHealth: number; // 0-100
   status: HealthStatus;
   description?: string;
+  index?: number;
 }
 
 export interface LinkData {
@@ -30,6 +31,7 @@ export interface LinkData {
   target: string;
   value: number; // Investment amount / Exposure in Billions
   type: "investment" | "partnership" | "dependency";
+  index?: number;
 }
 
 export interface GraphData {
