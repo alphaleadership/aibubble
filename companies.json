@@ -9,8 +9,12 @@
     { "id": "meta", "name": "Meta", "type": "Application", "valuation": 1200, "cashReserve": 300, "currentHealth": 100, "status": "Healthy", "description": "Open Source Llama models." },
     { "id": "tsmc", "name": "TSMC", "type": "Infrastructure", "valuation": 600, "cashReserve": 200, "currentHealth": 100, "status": "Healthy", "description": "Fonderie de puces essentielle." },
     { "id": "mistral", "name": "Mistral AI", "type": "Model Lab", "valuation": 2, "cashReserve": 0.5, "currentHealth": 100, "status": "Healthy", "description": "Champion européen de l'open weight." },
-    { "id": "softbank", "name": "Softbank", "type": "VC / Holding", "valuation": 100, "cashReserve": 30, "currentHealth": 100, "status": "Healthy", "description": "Investisseur tech majeur." }
-  
+    { "id": "softbank", "name": "Softbank", "type": "VC / Holding", "valuation": 100, "cashReserve": 30, "currentHealth": 100, "status": "Healthy", "description": "Investisseur tech majeur." },
+    { "id": "apple", "name": "Apple", "type": "Application", "valuation": 2800, "cashReserve": 600, "currentHealth": 100, "status": "Healthy", "description": "iPhone, Mac, services et puces maison." },
+    { "id": "tesla", "name": "Tesla", "type": "Application", "valuation": 800, "cashReserve": 150, "currentHealth": 90, "status": "Healthy", "description": "Véhicules électriques et énergie." },
+    { "id": "ibm", "name": "IBM", "type": "Cloud Provider", "valuation": 120, "cashReserve": 20, "currentHealth": 85, "status": "Healthy", "description": "Cloud, IA et services IT." },
+    { "id": "intel", "name": "Intel", "type": "Infrastructure", "valuation": 150, "cashReserve": 30, "currentHealth": 80, "status": "Stressed", "description": "Fabricant de processeurs." },
+    { "id": "sequoia", "name": "Sequoia Capital", "type": "VC / Holding", "valuation": 80, "cashReserve": 25, "currentHealth": 95, "status": "Healthy", "description": "Fonds d'investissement tech." }
   ],
   "links": [
     {
@@ -129,6 +133,51 @@
       "id": "link-12",
       "name": "nvidia to mistral",
       "index": 12
+    },
+    {
+      "source": "apple",
+      "target": "nvidia",
+      "value": 8,
+      "type": "dependency",
+      "id": "link-13",
+      "name": "apple to nvidia",
+      "index": 13
+    },
+    {
+      "source": "apple",
+      "target": "tsmc",
+      "value": 15,
+      "type": "dependency",
+      "id": "link-14",
+      "name": "apple to tsmc",
+      "index": 14
+    },
+    {
+      "source": "tesla",
+      "target": "nvidia",
+      "value": 5,
+      "type": "dependency",
+      "id": "link-15",
+      "name": "tesla to nvidia",
+      "index": 15
+    },
+    {
+      "source": "sequoia-capital",
+      "target": "mistral",
+      "value": 0.3,
+      "type": "investment",
+      "id": "link-16",
+      "name": "sequoia-capital to mistral",
+      "index": 16
+    },
+    {
+      "source": "intel",
+      "target": "tsmc",
+      "value": 10,
+      "type": "dependency",
+      "id": "link-17",
+      "name": "intel to tsmc",
+      "index": 17
     }
   ]
 }
