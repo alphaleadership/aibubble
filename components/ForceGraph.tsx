@@ -59,7 +59,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
 
     // Deep copy data for D3
     const nodes = filteredNodes.map(d => ({ ...d })) as (NodeData & d3.SimulationNodeDatum)[];
-    const links = filteredLinks.map(d => ({ ...d })) as (LinkData & d3.SimulationLinkDatum<NodeData & d3.SimulationNodeDatum>)[];
+    const links = filteredLinks.map(d => ({ ...d })) as (LinkData & d3.SimulationLinkDatum<NodeData >)[];
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
