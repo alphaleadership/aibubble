@@ -20,6 +20,7 @@
     { "id": "oracle", "name": "Oracle", "type": "Cloud Provider", "valuation": 250, "cashReserve": 50, "currentHealth": 85, "status": "Healthy", "description": "Base de données et cloud enterprise." },
     { "id": "qualcomm", "name": "Qualcomm", "type": "Infrastructure", "valuation": 140, "cashReserve": 30, "currentHealth": 80, "status": "Healthy", "description": "Puces pour mobiles et IoT." },
     { "id": "tigerglobal", "name": "Tiger Global", "type": "VC / Holding", "valuation": 70, "cashReserve": 20, "currentHealth": 90, "status": "Healthy", "description": "Fonds d'investissement tech agressif." }
+
   ],
   "links": [
     {
