@@ -58,8 +58,12 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     d3.select(svgRef.current).selectAll("*").remove();
 
     // Deep copy data for D3
-    const nodes = filteredNodes.map(d => ({ ...d })) as (NodeData )[];
-    const links = filteredLinks.map(d => ({ ...d })) as (LinkData )[];
+    const nodes = filteredNodes.map(d => ({ ...d })) as NodeData[];
+    const links = filteredLinks.map(d => ({
+      ...d,
+      source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source))!,
+      target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target))!,
+    })) as d3.SimulationLinkDatum<NodeData>[];
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
@@ -149,10 +153,10 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
 
     simulation.on("tick", () => {
       link
-        .attr("x1", d => (d.source as any).x)
-        .attr("y1", d => (d.source as any).y)
-        .attr("x2", d => (d.target as any).x)
-        .attr("y2", d => (d.target as any).y);
+        .attr("x1", d => (d.source as NodeData).x!)
+        .attr("y1", d => (d.source as NodeData).y!)
+        .attr("x2", d => (d.target as NodeData).x!)
+        .attr("y2", d => (d.target as NodeData).y!);
 
       node
         .attr("cx", d => d.x!)
