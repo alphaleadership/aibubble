@@ -1,85 +1,87 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
-import {  HealthStatus } from '../types';
-
-
+import { GraphData, NodeData, CustomLinkData, HealthStatus } from '../types';
 
 const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) => {
   const svgRef = useRef(null);
   const simulationRef = useRef(null);
+  const zoomRef = useRef(null);
 
   const getNodeColor = (status) => {
     switch (status) {
-      case HealthStatus.HEALTHY: return '#10b981'; // Emerald 500
-      case HealthStatus.STRESSED: return '#f59e0b'; // Amber 500
-      case HealthStatus.BANKRUPT: return '#ef4444'; // Red 500
+      case HealthStatus.HEALTHY: return '#10b981';
+      case HealthStatus.STRESSED: return '#f59e0b';
+      case HealthStatus.BANKRUPT: return '#ef4444';
       default: return '#64748b';
     }
   };
 
   const getLinkColor = (type) => {
     switch (type) {
-        case 'investment': return '#10b981'; // Emerald (Finance)
-        case 'dependency': return '#8b5cf6'; // Violet (Tech)
-        case 'partnership': return '#3b82f6'; // Blue (Partnership)
-        default: return '#64748b'; // Slate
+      case 'investment': return '#10b981';
+      case 'dependency': return '#8b5cf6';
+      case 'partnership': return '#3b82f6';
+      default: return '#64748b';
     }
   };
 
   const renderGraph = useCallback(() => {
     if (!svgRef.current) return;
-    console.log(data)
-    // Filter links based on mode
+
     const filteredLinks = data.links.filter(l => {
-        if (filterMode === 'financial') return l.type === 'investment';
-        if (filterMode === 'tech') return l.type === 'dependency';
-        return true;
+      if (filterMode === 'financial') return l.type === 'investment';
+      if (filterMode === 'tech') return l.type === 'dependency';
+      return true;
     });
 
-    // Determine relevant nodes (connected to filtered links or all if mode is 'all')
     const activeNodeIds = new Set();
     filteredLinks.forEach(l => {
-        activeNodeIds.add(typeof l.source === 'object' ? (l.source ) : l.source);
-        activeNodeIds.add(typeof l.target === 'object' ? (l.target ): l.target);
+      activeNodeIds.add(typeof l.source === 'object' ? l.source.id : l.source);
+      activeNodeIds.add(typeof l.target === 'object' ? l.target.id : l.target);
     });
-    console.log(activeNodeIds)
-    // In 'all' mode show everyone, otherwise only connected nodes
-    const filteredNodes = filterMode === 'all' 
-        ? data.nodes 
-        : data.nodes.filter(n => activeNodeIds.has(n.id));
 
-    // Clear previous render
+    const filteredNodes = filterMode === 'all'
+      ? data.nodes
+      : data.nodes.filter(n => activeNodeIds.has(n.id));
+
     d3.select(svgRef.current).selectAll("*").remove();
 
-    // Deep copy data for D3
-    const nodes = filteredNodes.map(d => ({ ...d })) ;
-    const links = filteredLinks.map(d => ({
-      ...d,
-      source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source)),
-      target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target)),
-    })) ;
+    const nodes = filteredNodes.map(d => ({ ...d }));
+    const links = filteredLinks
+      .map(d => ({
+        ...d,
+        source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source)),
+        target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target)),
+      }))
+      .filter(d => d.source !== undefined && d.target !== undefined);
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
       .style("max-width", "100%")
       .style("height", "auto");
 
-    // Define markers for different link types
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 4])
+      .on("zoom", (event) => {
+        svg.selectAll("g").attr("transform", event.transform);
+      });
+
+    svg.call(zoom);
+    zoomRef.current = zoom;
+
     const defs = svg.append("defs");
-    
-    // Helper to create markers
     const createMarker = (id, color) => {
-        defs.append("marker")
-            .attr("id", id)
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 25)
-            .attr("refY", 0)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("orient", "auto")
-            .append("path")
-            .attr("fill", color)
-            .attr("d", "M0,-5L10,0L0,5");
+      defs.append("marker")
+        .attr("id", id)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 25)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("fill", color)
+        .attr("d", "M0,-5L10,0L0,5");
     };
 
     createMarker("arrow-investment", "#10b981");
@@ -88,21 +90,21 @@ const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) =>
     createMarker("arrow-default", "#64748b");
 
     const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id((d) => d.id).distance(150))
+      .force("link", d3.forceLink(links).id(d => d.id).distance(150))
       .force("charge", d3.forceManyBody().strength(-400))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collide", d3.forceCollide().radius(40));
-    
+
     simulationRef.current = simulation;
 
-    const link = svg.append("g")
+    svg.append("g")
       .attr("stroke-opacity", 0.6)
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", (d) => Math.sqrt(d.value) + 1.5)
-      .attr("stroke", (d) => getLinkColor(d.type))
-      .attr("marker-end", (d) => `url(#arrow-${d.type})`); // Dynamic marker
+      .attr("stroke-width", d => Math.sqrt(d.value) + 1.5)
+      .attr("stroke", d => getLinkColor(d.type))
+      .attr("marker-end", d => `url(#arrow-${d.type})`);
 
     const node = svg.append("g")
       .attr("stroke", "#fff")
@@ -113,13 +115,13 @@ const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) =>
       .attr("r", d => 12 + Math.sqrt(d.valuation) / 2)
       .attr("fill", d => getNodeColor(d.status))
       .attr("cursor", "pointer")
-      .call(drag(simulation) )
-      .on("click", (_event, d) => {
-          const original = data.nodes.find(n => n.id === d.id);
-          if(original) onNodeClick(original);
+      .call(drag(simulation))
+      .on("click", (_, d) => {
+        const original = data.nodes.find(n => n.id === d.id);
+        if(original) onNodeClick(original);
       });
 
-    const label = svg.append("g")
+    svg.append("g")
       .selectAll("text")
       .data(nodes)
       .join("text")
@@ -132,8 +134,7 @@ const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) =>
       .style("pointer-events", "none")
       .style("text-shadow", "0 1px 4px rgba(0,0,0,0.9)");
 
-    // Valuation label (subtext)
-    const valLabel = svg.append("g")
+    svg.append("g")
       .selectAll("text")
       .data(nodes)
       .join("text")
@@ -146,21 +147,17 @@ const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) =>
       .style("pointer-events", "none");
 
     simulation.on("tick", () => {
-      link
-        .attr("x1", d => (d.source ).x)
-        .attr("y1", d => (d.source ).y)
-        .attr("x2", d => (d.target ).x)
-        .attr("y2", d => (d.target ).y);
+      svg.selectAll("line")
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
 
       node
         .attr("cx", d => d.x)
         .attr("cy", d => d.y);
-      
-      label
-        .attr("x", d => d.x)
-        .attr("y", d => d.y);
 
-      valLabel
+      svg.selectAll("text")
         .attr("x", d => d.x)
         .attr("y", d => d.y);
     });
@@ -175,47 +172,59 @@ const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) =>
   }, [renderGraph]);
 
   const drag = (simulation) => {
-    function dragstarted(_event) {
-      if (!_event.active) simulation.alphaTarget(0.3).restart();
-      _event.subject.fx = _event.subject.x;
-      _event.subject.fy = _event.subject.y;
+    function dragstarted(event) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
     }
-    
-    function dragged(_event) {
-      _event.subject.fx = _event.x;
-      _event.subject.fy = _event.y;
+
+    function dragged(event) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
     }
-    
-    function dragended(_event) {
-      if (!_event.active) simulation.alphaTarget(0);
-      _event.subject.fx = null;
-      _event.subject.fy = null;
+
+    function dragended(event) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
     }
-    
+
     return d3.drag()
       .on("start", dragstarted)
       .on("drag", dragged)
       .on("end", dragended);
   };
 
+  const resetZoom = () => {
+    if (zoomRef.current && svgRef.current) {
+      d3.select(svgRef.current)
+        .transition()
+        .call(zoomRef.current.transform, d3.zoomIdentity);
+    }
+  };
+
   return (
     <div className="relative w-full h-full bg-slate-900 border border-slate-700 rounded-lg overflow-hidden shadow-2xl">
       <svg ref={svgRef} width={width} height={height} className="w-full h-full block" />
-      <div className="absolute top-4 left-4 pointer-events-none flex gap-4 text-xs font-mono">
-         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-emerald-500"></div> Sain</div>
-         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-amber-500"></div> En difficulté</div>
-         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500"></div> Faillite</div>
-      </div>
-      <div className="absolute top-4 right-4 pointer-events-none flex flex-col gap-2 text-xs font-mono items-end">
-         <div className={`flex items-center gap-2 ${filterMode !== 'all' && filterMode !== 'financial' ? 'opacity-30' : ''}`}>
-             <span className="text-slate-400">Investissement</span> <div className="w-8 h-[2px] bg-emerald-500"></div> 
-         </div>
-         <div className={`flex items-center gap-2 ${filterMode !== 'all' && filterMode !== 'tech' ? 'opacity-30' : ''}`}>
-            <span className="text-slate-400">Dépendance Tech</span> <div className="w-8 h-[2px] bg-violet-500"></div> 
-         </div>
-         <div className="flex items-center gap-2 opacity-75">
-            <span className="text-slate-400">Partenariat</span> <div className="w-8 h-[2px] bg-blue-500"></div> 
-         </div>
+      <div className="absolute bottom-4 right-4 flex flex-col gap-2">
+        <button
+          onClick={() => d3.select(svgRef.current).transition().call(zoomRef.current.scaleBy, 1.2)}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          +
+        </button>
+        <button
+          onClick={() => d3.select(svgRef.current).transition().call(zoomRef.current.scaleBy, 0.8)}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          -
+        </button>
+        <button
+          onClick={resetZoom}
+          className="p-2 bg-white rounded-full shadow"
+        >
+          ✕
+        </button>
       </div>
     </div>
   );
