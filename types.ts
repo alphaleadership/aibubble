@@ -51,7 +51,7 @@ export interface NodeData  {
     fy?: number | null | undefined;
 }
 
-export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
+export interface LinkData extends d3.SimulationLinkDatum<NodeData extends d3.SimulationNodeDatum? NodeData : never> {
   id: string;
   name: string;
   source: string;
