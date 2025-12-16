@@ -26,11 +26,9 @@ export interface NodeData extends d3.SimulationNodeDatum {
   index?: number | undefined;
 }
 
-export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
+export interface CustomLinkData extends d3.SimulationLinkDatum<NodeData> {
   id: string;
   name: string;
-  source: string | NodeData;
-  target: string | NodeData;
   value: number; // Investment amount / Exposure in Billions
   type: "investment" | "partnership" | "dependency";
   index?: number;
@@ -38,7 +36,7 @@ export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
 
 export interface GraphData {
   nodes: NodeData[];
-  links: LinkData[];
+  links: CustomLinkData[];
 }
 
 export interface SimulationResult {
