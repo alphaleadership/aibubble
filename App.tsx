@@ -191,8 +191,7 @@ const App: React.FC = () => {
         iteration++;
     }
 
-    const analysis = await analyzeConsequences(currentNodes[patientZeroIdx].name, Array.from(impactedNodeIds));
-    setSimAnalysis(analysis);
+   
 
     setIsSimulating(false);
   }, [data, selectedNode]);
