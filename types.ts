@@ -1,6 +1,5 @@
-
-
 import * as d3 from 'd3';
+
 export enum CompanyType {
   INFRASTRUCTURE = "Infrastructure", // e.g., Nvidia, TSMC
   MODEL_LAB = "Model Lab", // e.g., OpenAI, Anthropic
@@ -15,7 +14,7 @@ export enum HealthStatus {
   BANKRUPT = "Bankrupt",
 }
 
-export interface NodeData  {
+export interface NodeData extends d3.SimulationNodeDatum {
   id: string;
   name: string;
   type: CompanyType;
@@ -25,37 +24,13 @@ export interface NodeData  {
   status: HealthStatus;
   description?: string;
   index?: number | undefined;
-    /**
-     * Node’s current x-position
-     */
-    x?: number | undefined;
-    /**
-     * Node’s current y-position
-     */
-    y?: number | undefined;
-    /**
-     * Node’s current x-velocity
-     */
-    vx?: number | undefined;
-    /**
-     * Node’s current y-velocity
-     */
-    vy?: number | undefined;
-    /**
-     * Node’s fixed x-position (if position was fixed)
-     */
-    fx?: number | null | undefined;
-    /**
-     * Node’s fixed y-position (if position was fixed)
-     */
-    fy?: number | null | undefined;
 }
 
-export interface LinkData extends d3.SimulationLinkDatum<NodeData extends d3.SimulationNodeDatum? NodeData : never> {
+export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
   id: string;
   name: string;
-  source: string;
-  target: string;
+  source: string | NodeData;
+  target: string | NodeData;
   value: number; // Investment amount / Exposure in Billions
   type: "investment" | "partnership" | "dependency";
   index?: number;
