@@ -15,7 +15,7 @@ export enum HealthStatus {
   BANKRUPT = "Bankrupt",
 }
 
-export interface NodeData extends d3.SimulationNodeDatum {
+export interface NodeData  {
   id: string;
   name: string;
   type: CompanyType;
@@ -24,10 +24,34 @@ export interface NodeData extends d3.SimulationNodeDatum {
   currentHealth: number; // 0-100
   status: HealthStatus;
   description?: string;
-  index?: number;
+  index?: number | undefined;
+    /**
+     * Node’s current x-position
+     */
+    x?: number | undefined;
+    /**
+     * Node’s current y-position
+     */
+    y?: number | undefined;
+    /**
+     * Node’s current x-velocity
+     */
+    vx?: number | undefined;
+    /**
+     * Node’s current y-velocity
+     */
+    vy?: number | undefined;
+    /**
+     * Node’s fixed x-position (if position was fixed)
+     */
+    fx?: number | null | undefined;
+    /**
+     * Node’s fixed y-position (if position was fixed)
+     */
+    fy?: number | null | undefined;
 }
 
-export interface LinkData extends d3.SimulationLinkDatum<d3.SimulationNodeDatum> {
+export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
   id: string;
   name: string;
   source: string;
