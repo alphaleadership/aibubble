@@ -59,11 +59,13 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
 
     // Deep copy data for D3
     const nodes = filteredNodes.map(d => ({ ...d })) as NodeData[];
-    const links = filteredLinks.map(d => ({
-      ...d,
-      source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source))!,
-      target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target))!,
-    })) as CustomLinkData[];
+    const links = filteredLinks
+      .map(d => ({
+        ...d,
+        source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source)),
+        target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target)),
+      }))
+      .filter((d): d is CustomLinkData => d.source !== undefined && d.target !== undefined);
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
