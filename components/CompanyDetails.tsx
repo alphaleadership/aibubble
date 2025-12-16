@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NodeData, HealthStatus, CompanyType } from '../types';
-import { Edit2, Save, X, Trash2 } from 'lucide-react';
+import { Edit2, Save, X } from 'lucide-react';
 
 interface CompanyDetailsProps {
   node: NodeData | null;
