@@ -1,30 +1,184 @@
 {
-"nodes": [
-    { "id": "nvidia", "name": "Nvidia", "type": "Infrastructure", "valuation": 2200, "cashReserve": 500, "currentHealth": 100, "status": "Healthy", "description": "Fournisseur mondial de GPU." },
-    { "id": "microsoft", "name": "Microsoft", "type": "Cloud Provider", "valuation": 3000, "cashReserve": 800, "currentHealth": 100, "status": "Healthy", "description": "Géant du cloud et actionnaire majeur." },
-    { "id": "openai", "name": "OpenAI", "type": "Model Lab", "valuation": 80, "cashReserve": 10, "currentHealth": 100, "status": "Healthy", "description": "Créateur de GPT-4." },
-    { "id": "anthropic", "name": "Anthropic", "type": "Model Lab", "valuation": 18, "cashReserve": 5, "currentHealth": 100, "status": "Healthy", "description": "Sécurité de l'IA et Claude." },
-    { "id": "google", "name": "Google", "type": "Cloud Provider", "valuation": 1700, "cashReserve": 400, "currentHealth": 100, "status": "Healthy", "description": "DeepMind et TPU infrastructure." },
-    { "id": "amazon", "name": "Amazon", "type": "Cloud Provider", "valuation": 1800, "cashReserve": 450, "currentHealth": 100, "status": "Healthy", "description": "AWS et investisseur Anthropic." },
-    { "id": "meta", "name": "Meta", "type": "Application", "valuation": 1200, "cashReserve": 300, "currentHealth": 100, "status": "Healthy", "description": "Open Source Llama models." },
-    { "id": "tsmc", "name": "TSMC", "type": "Infrastructure", "valuation": 600, "cashReserve": 200, "currentHealth": 100, "status": "Healthy", "description": "Fonderie de puces essentielle." },
-    { "id": "mistral", "name": "Mistral AI", "type": "Model Lab", "valuation": 2, "cashReserve": 0.5, "currentHealth": 100, "status": "Healthy", "description": "Champion européen de l'open weight." },
-    { "id": "softbank", "name": "Softbank", "type": "VC / Holding", "valuation": 100, "cashReserve": 30, "currentHealth": 100, "status": "Healthy", "description": "Investisseur tech majeur." }
+  "nodes": [
+    {
+      "id": "nvidia",
+      "name": "Nvidia",
+      "type": "Infrastructure",
+      "valuation": 2200,
+      "cashReserve": 500,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Fournisseur mondial de GPU."
+    },
+    {
+      "id": "microsoft",
+      "name": "Microsoft",
+      "type": "Cloud Provider",
+      "valuation": 3000,
+      "cashReserve": 800,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Géant du cloud et actionnaire majeur."
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "type": "Model Lab",
+      "valuation": 80,
+      "cashReserve": 10,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Créateur de GPT-4."
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic",
+      "type": "Model Lab",
+      "valuation": 18,
+      "cashReserve": 5,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Sécurité de l'IA et Claude."
+    },
+    {
+      "id": "google",
+      "name": "Google",
+      "type": "Cloud Provider",
+      "valuation": 1700,
+      "cashReserve": 400,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "DeepMind et TPU infrastructure."
+    },
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "type": "Cloud Provider",
+      "valuation": 1800,
+      "cashReserve": 450,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "AWS et investisseur Anthropic."
+    },
+    {
+      "id": "meta",
+      "name": "Meta",
+      "type": "Application",
+      "valuation": 1200,
+      "cashReserve": 300,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Open Source Llama models."
+    },
+    {
+      "id": "tsmc",
+      "name": "TSMC",
+      "type": "Infrastructure",
+      "valuation": 600,
+      "cashReserve": 200,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Fonderie de puces essentielle."
+    },
+    {
+      "id": "mistral",
+      "name": "Mistral AI",
+      "type": "Model Lab",
+      "valuation": 2,
+      "cashReserve": 0.5,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Champion européen de l'open weight."
+    },
+    {
+      "id": "softbank",
+      "name": "Softbank",
+      "type": "VC / Holding",
+      "valuation": 100,
+      "cashReserve": 30,
+      "currentHealth": 100,
+      "status": "Healthy",
+      "description": "Investisseur tech majeur."
+    }
   ],
   "links": [
-    { "source": "microsoft", "target": "openai", "value": 13, "type": "investment" },
-    { "source": "openai", "target": "nvidia", "value": 5, "type": "dependency" },
-    { "source": "openai", "target": "microsoft", "value": 4, "type": "dependency" },
-    { "source": "amazon", "target": "anthropic", "value": 4, "type": "investment" },
-    { "source": "google", "target": "anthropic", "value": 2, "type": "investment" },
-    { "source": "anthropic", "target": "google", "value": 1.5, "type": "dependency" },
-    { "source": "nvidia", "target": "tsmc", "value": 20, "type": "dependency" },
-    { "source": "microsoft", "target": "nvidia", "value": 15, "type": "dependency" },
-    { "source": "google", "target": "nvidia", "value": 10, "type": "dependency" },
-    { "source": "meta", "target": "nvidia", "value": 12, "type": "dependency" },
-    { "source": "softbank", "target": "nvidia", "value": 1, "type": "investment" },
-    { "source": "microsoft", "target": "mistral", "value": 0.2, "type": "investment" },
-    { "source": "nvidia", "target": "mistral", "value": 0.1, "type": "partnership" }
+    {
+      "source": "microsoft",
+      "target": "openai",
+      "value": 13,
+      "type": "investment"
+    },
+    {
+      "source": "openai",
+      "target": "nvidia",
+      "value": 5,
+      "type": "dependency"
+    },
+    {
+      "source": "openai",
+      "target": "microsoft",
+      "value": 4,
+      "type": "dependency"
+    },
+    {
+      "source": "amazon",
+      "target": "anthropic",
+      "value": 4,
+      "type": "investment"
+    },
+    {
+      "source": "google",
+      "target": "anthropic",
+      "value": 2,
+      "type": "investment"
+    },
+    {
+      "source": "anthropic",
+      "target": "google",
+      "value": 1.5,
+      "type": "dependency"
+    },
+    {
+      "source": "nvidia",
+      "target": "tsmc",
+      "value": 20,
+      "type": "dependency"
+    },
+    {
+      "source": "microsoft",
+      "target": "nvidia",
+      "value": 15,
+      "type": "dependency"
+    },
+    {
+      "source": "google",
+      "target": "nvidia",
+      "value": 10,
+      "type": "dependency"
+    },
+    {
+      "source": "meta",
+      "target": "nvidia",
+      "value": 12,
+      "type": "dependency"
+    },
+    {
+      "source": "softbank",
+      "target": "nvidia",
+      "value": 1,
+      "type": "investment"
+    },
+    {
+      "source": "microsoft",
+      "target": "mistral",
+      "value": 0.2,
+      "type": "investment"
+    },
+    {
+      "source": "nvidia",
+      "target": "mistral",
+      "value": 0.1,
+      "type": "partnership"
+    }
   ]
 }
-  

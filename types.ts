@@ -24,6 +24,8 @@ export interface NodeData {
 }
 
 export interface LinkData {
+    id: string;
+  name: string;
   source: string;
   target: string;
   value: number; // Investment amount / Exposure in Billions
