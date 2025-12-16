@@ -17,12 +17,12 @@ export enum HealthStatus {
 
 export interface NodeData  {
   id: string;
-  name?: string;
-  type?: CompanyType;
-  valuation?: number; // In Billions
-  cashReserve?: number; // Conceptual buffer before failure
-  currentHealth?: number; // 0-100
-  status?: HealthStatus;
+  name: string;
+  type: CompanyType;
+  valuation: number; // In Billions
+  cashReserve: number; // Conceptual buffer before failure
+  currentHealth: number; // 0-100
+  status: HealthStatus;
   description?: string;
   index?: number | undefined;
     /**
