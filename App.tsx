@@ -5,7 +5,7 @@ import AddNodeModal from './components/AddNodeModal';
 import { INITIAL_DATA } from './constants';
 import { GraphData, NodeData, HealthStatus } from './types';
 
-import { Loader2, RefreshCw, Send, AlertTriangle, Plus, Download, Upload, Filter, Banknote, Cpu, Network } from 'lucide-react';
+import {  RefreshCw,  AlertTriangle, Plus, Download, Upload,  Banknote, Cpu, Network } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<GraphData>(INITIAL_DATA);
