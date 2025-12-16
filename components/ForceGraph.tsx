@@ -12,7 +12,7 @@ interface ForceGraphProps {
 
 const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, height, filterMode = 'all' }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const simulationRef = useRef<d3.Simulation<d3.SimulationNodeDatum, undefined> | null>(null);
+  const simulationRef = useRef<d3.Simulation<NodeData, undefined> | null>(null);
 
   const getNodeColor = (status: HealthStatus) => {
     switch (status) {
@@ -89,7 +89,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     createMarker("arrow-partnership", "#3b82f6");
     createMarker("arrow-default", "#64748b");
 
-    const simulation = d3.forceSimulation(nodes)
+    const simulation = d3.forceSimulation<NodeData, undefined>(nodes)
       .force("link", d3.forceLink(links).id((d: any) => d.id).distance(150))
       .force("charge", d3.forceManyBody().strength(-400))
       .force("center", d3.forceCenter(width / 2, height / 2))
@@ -116,7 +116,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
       .attr("fill", d => getNodeColor(d.status))
       .attr("cursor", "pointer")
       .call(drag(simulation) as any)
-      .on("click", (event, d) => {
+      .on("click", (_event, d) => {
           const original = data.nodes.find(n => n.id === d.id);
           if(original) onNodeClick(original);
       });
@@ -176,22 +176,22 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     };
   }, [renderGraph]);
 
-  const drag = (simulation: d3.Simulation<any, any>) => {
-    function dragstarted(event: any) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
+  const drag = (simulation: d3.Simulation<NodeData, undefined>) => {
+    function dragstarted(_event: any) {
+      if (!_event.active) simulation.alphaTarget(0.3).restart();
+      _event.subject.fx = _event.subject.x;
+      _event.subject.fy = _event.subject.y;
     }
     
-    function dragged(event: any) {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+    function dragged(_event: any) {
+      _event.subject.fx = _event.x;
+      _event.subject.fy = _event.y;
     }
     
-    function dragended(event: any) {
-      if (!event.active) simulation.alphaTarget(0);
-      event.subject.fx = null;
-      event.subject.fy = null;
+    function dragended(_event: any) {
+      if (!_event.active) simulation.alphaTarget(0);
+      _event.subject.fx = null;
+      _event.subject.fy = null;
     }
     
     return d3.drag()
