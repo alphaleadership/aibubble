@@ -1,3 +1,6 @@
+
+
+import * as d3 from 'd3';
 export enum CompanyType {
   INFRASTRUCTURE = "Infrastructure", // e.g., Nvidia, TSMC
   MODEL_LAB = "Model Lab", // e.g., OpenAI, Anthropic
@@ -12,7 +15,7 @@ export enum HealthStatus {
   BANKRUPT = "Bankrupt",
 }
 
-export interface NodeData {
+export interface NodeData extends d3.SimulationNodeDatum {
   id: string;
   name: string;
   type: CompanyType;
@@ -24,8 +27,8 @@ export interface NodeData {
   index?: number;
 }
 
-export interface LinkData {
-    id: string;
+export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
+  id: string;
   name: string;
   source: string;
   target: string;
