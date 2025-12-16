@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
-import { GraphData, NodeData, LinkData, HealthStatus } from '../types';
+import { GraphData, NodeData, CustomLinkData, HealthStatus } from '../types';
 
 interface ForceGraphProps {
   data: GraphData;
@@ -63,7 +63,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
       ...d,
       source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source))!,
       target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target))!,
-    })) as d3.SimulationLinkDatum<NodeData>[];
+    })) as CustomLinkData[];
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
@@ -106,9 +106,9 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", d => Math.sqrt(d.value) + 1.5)
-      .attr("stroke", d => getLinkColor(d.type))
-      .attr("marker-end", d => `url(#arrow-${d.type})`); // Dynamic marker
+      .attr("stroke-width", (d: CustomLinkData) => Math.sqrt(d.value) + 1.5)
+      .attr("stroke", (d: CustomLinkData) => getLinkColor(d.type))
+      .attr("marker-end", (d: CustomLinkData) => `url(#arrow-${d.type})`); // Dynamic marker
 
     const node = svg.append("g")
       .attr("stroke", "#fff")
