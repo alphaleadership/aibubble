@@ -14,7 +14,13 @@
     { "id": "tesla", "name": "Tesla", "type": "Application", "valuation": 800, "cashReserve": 150, "currentHealth": 90, "status": "Healthy", "description": "Véhicules électriques et énergie." },
     { "id": "ibm", "name": "IBM", "type": "Cloud Provider", "valuation": 120, "cashReserve": 20, "currentHealth": 85, "status": "Healthy", "description": "Cloud, IA et services IT." },
     { "id": "intel", "name": "Intel", "type": "Infrastructure", "valuation": 150, "cashReserve": 30, "currentHealth": 80, "status": "Stressed", "description": "Fabricant de processeurs." },
-    { "id": "sequoia", "name": "Sequoia Capital", "type": "VC / Holding", "valuation": 80, "cashReserve": 25, "currentHealth": 95, "status": "Healthy", "description": "Fonds d'investissement tech." }
+    { "id": "sequoia", "name": "Sequoia Capital", "type": "VC / Holding", "valuation": 80, "cashReserve": 25, "currentHealth": 95, "status": "Healthy", "description": "Fonds d'investissement tech." },
+    { "id": "samsung", "name": "Samsung", "type": "Infrastructure", "valuation": 350, "cashReserve": 80, "currentHealth": 95, "status": "Healthy", "description": "Électronique grand public et puces mémoire." },
+    { "id": "amd", "name": "AMD", "type": "Infrastructure", "valuation": 200, "cashReserve": 40, "currentHealth": 90, "status": "Healthy", "description": "Concurrent direct de Nvidia et Intel pour les CPU/GPU." },
+    { "id": "oracle", "name": "Oracle", "type": "Cloud Provider", "valuation": 250, "cashReserve": 50, "currentHealth": 85, "status": "Healthy", "description": "Base de données et cloud enterprise." },
+    { "id": "qualcomm", "name": "Qualcomm", "type": "Infrastructure", "valuation": 140, "cashReserve": 30, "currentHealth": 80, "status": "Healthy", "description": "Puces pour mobiles et IoT." },
+    { "id": "tigerglobal", "name": "Tiger Global", "type": "VC / Holding", "valuation": 70, "cashReserve": 20, "currentHealth": 90, "status": "Healthy", "description": "Fonds d'investissement tech agressif." }
+
   ],
   "links": [
     {
@@ -162,12 +168,12 @@
       "index": 15
     },
     {
-      "source": "sequoia-capital",
+      "source": "sequoia",
       "target": "mistral",
       "value": 0.3,
       "type": "investment",
       "id": "link-16",
-      "name": "sequoia-capital to mistral",
+      "name": "sequoia to mistral",
       "index": 16
     },
     {
@@ -178,6 +184,60 @@
       "id": "link-17",
       "name": "intel to tsmc",
       "index": 17
+    },
+    {
+      "source": "samsung",
+      "target": "tsmc",
+      "value": 12,
+      "type": "dependency",
+      "id": "link-18",
+      "name": "samsung to tsmc",
+      "index": 18
+    },
+    {
+      "source": "amd",
+      "target": "tsmc",
+      "value": 10,
+      "type": "dependency",
+      "id": "link-19",
+      "name": "amd to tsmc",
+      "index": 19
+    },
+    {
+      "source": "oracle",
+      "target": "nvidia",
+      "value": 3,
+      "type": "dependency",
+      "id": "link-20",
+      "name": "oracle to nvidia",
+      "index": 20
+    },
+    {
+      "source": "qualcomm",
+      "target": "tsmc",
+      "value": 8,
+      "type": "dependency",
+      "id": "link-21",
+      "name": "qualcomm to tsmc",
+      "index": 21
+    },
+    {
+      "source": "tiger",
+      "target": "mistral",
+      "value": 0.2,
+      "type": "investment",
+      "id": "link-22",
+      "name": "tiger to mistral",
+      "index": 22
+    },
+    {
+      "source": "tigerglobal",
+      "target": "anthropic",
+      "value": 0.5,
+      "type": "investment",
+      "id": "link-23",
+      "name": "tiger to anthropic",
+      "index": 23
     }
   ]
 }
