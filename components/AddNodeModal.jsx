@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
-import { CompanyType, HealthStatus, NodeData } from '../types';
+import { CompanyType, HealthStatus} from '../types';
 import { X } from 'lucide-react';
 
-interface AddNodeModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAdd: (node: NodeData) => void;
-}
 
-const AddNodeModal: React.FC<AddNodeModalProps> = ({ isOpen, onClose, onAdd }) => {
+
+const AddNodeModal = ({ isOpen, onClose, onAdd }) => {
   const [name, setName] = useState('');
-  const [type, setType] = useState<CompanyType>(CompanyType.APPLICATION);
+  const [type, setType] = useState(CompanyType.APPLICATION);
   const [valuation, setValuation] = useState('');
   const [cashReserve, setCashReserve] = useState('');
   const [description, setDescription] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !valuation || !cashReserve) return;
 
-    const newNode: NodeData = {
+    const newNode = {
       id: name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
       name,
       type,
@@ -71,7 +67,7 @@ const AddNodeModal: React.FC<AddNodeModalProps> = ({ isOpen, onClose, onAdd }) =
             <label className="block text-xs uppercase text-slate-500 mb-1">Type</label>
             <select 
               value={type}
-              onChange={e => setType(e.target.value as CompanyType)}
+              onChange={e => setType(e.target.value )}
               className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-slate-200 focus:border-blue-500 outline-none"
             >
               {Object.values(CompanyType).map(t => (

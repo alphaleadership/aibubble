@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { NodeData, HealthStatus, CompanyType } from '../types';
+import {  HealthStatus, CompanyType } from '../types';
 import { Edit2, Save, X } from 'lucide-react';
 
-interface CompanyDetailsProps {
-  node: NodeData | null;
-  onKill: (nodeId: string) => void;
-  onUpdate: (updatedNode: NodeData) => void;
-  isSimulating: boolean;
-}
 
-const CompanyDetails: React.FC<CompanyDetailsProps> = ({ node, onKill, onUpdate, isSimulating }) => {
+
+const CompanyDetails = ({ node, onKill, onUpdate, isSimulating }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState<Partial<NodeData>>({});
+  const [editForm, setEditForm] = useState({});
 
   // Reset edit state when node changes
   useEffect(() => {
@@ -35,7 +30,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ node, onKill, onUpdate,
     if (editForm.name && editForm.valuation !== undefined) {
        onUpdate({
            ...node,
-           ...editForm as NodeData
+           ...editForm 
        });
        setIsEditing(false);
     }
@@ -55,7 +50,7 @@ const CompanyDetails: React.FC<CompanyDetailsProps> = ({ node, onKill, onUpdate,
              {isEditing ? (
                  <select 
                     value={editForm.type}
-                    onChange={(e) => setEditForm({...editForm, type: e.target.value as CompanyType})}
+                    onChange={(e) => setEditForm({...editForm, type: e.target.value })}
                     className="bg-slate-800 text-xs border border-slate-700 rounded px-2 py-1 mb-2 outline-none w-full"
                  >
                      {Object.values(CompanyType).map(t => <option key={t} value={t}>{t}</option>)}

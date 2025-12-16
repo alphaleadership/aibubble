@@ -1,20 +1,14 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
-import { GraphData, NodeData, CustomLinkData, HealthStatus } from '../types';
+import {  HealthStatus } from '../types';
 
-interface ForceGraphProps {
-  data: GraphData;
-  onNodeClick: (node: NodeData) => void;
-  width: number;
-  height: number;
-  filterMode?: 'all' | 'financial' | 'tech';
-}
 
-const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, height, filterMode = 'all' }) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const simulationRef = useRef<d3.Simulation<NodeData, undefined> | null>(null);
 
-  const getNodeColor = (status: HealthStatus) => {
+const ForceGraph = ({ data, onNodeClick, width, height, filterMode = 'all' }) => {
+  const svgRef = useRef(null);
+  const simulationRef = useRef(null);
+
+  const getNodeColor = (status) => {
     switch (status) {
       case HealthStatus.HEALTHY: return '#10b981'; // Emerald 500
       case HealthStatus.STRESSED: return '#f59e0b'; // Amber 500
@@ -23,7 +17,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     }
   };
 
-  const getLinkColor = (type: string) => {
+  const getLinkColor = (type) => {
     switch (type) {
         case 'investment': return '#10b981'; // Emerald (Finance)
         case 'dependency': return '#8b5cf6'; // Violet (Tech)
@@ -43,12 +37,12 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     });
 
     // Determine relevant nodes (connected to filtered links or all if mode is 'all')
-    const activeNodeIds = new Set<string>();
+    const activeNodeIds = new Set();
     filteredLinks.forEach(l => {
-        activeNodeIds.add(typeof l.source === 'object' ? (l.source as any).id : l.source);
-        activeNodeIds.add(typeof l.target === 'object' ? (l.target as any).id : l.target);
+        activeNodeIds.add(typeof l.source === 'object' ? (l.source ) : l.source);
+        activeNodeIds.add(typeof l.target === 'object' ? (l.target ): l.target);
     });
-
+    console.log(activeNodeIds)
     // In 'all' mode show everyone, otherwise only connected nodes
     const filteredNodes = filterMode === 'all' 
         ? data.nodes 
@@ -58,12 +52,12 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     d3.select(svgRef.current).selectAll("*").remove();
 
     // Deep copy data for D3
-    const nodes = filteredNodes.map(d => ({ ...d })) as NodeData[];
+    const nodes = filteredNodes.map(d => ({ ...d })) ;
     const links = filteredLinks.map(d => ({
       ...d,
-      source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source))!,
-      target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target))!,
-    })) as CustomLinkData[];
+      source: nodes.find(n => n.id === (typeof d.source === 'object' ? d.source.id : d.source)),
+      target: nodes.find(n => n.id === (typeof d.target === 'object' ? d.target.id : d.target)),
+    })) ;
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
@@ -74,7 +68,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     const defs = svg.append("defs");
     
     // Helper to create markers
-    const createMarker = (id: string, color: string) => {
+    const createMarker = (id, color) => {
         defs.append("marker")
             .attr("id", id)
             .attr("viewBox", "0 -5 10 10")
@@ -93,8 +87,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     createMarker("arrow-partnership", "#3b82f6");
     createMarker("arrow-default", "#64748b");
 
-    const simulation = d3.forceSimulation<NodeData, undefined>(nodes)
-      .force("link", d3.forceLink(links).id((d: any) => d.id).distance(150))
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id((d) => d.id).distance(150))
       .force("charge", d3.forceManyBody().strength(-400))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collide", d3.forceCollide().radius(40));
@@ -106,9 +100,9 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", (d: CustomLinkData) => Math.sqrt(d.value) + 1.5)
-      .attr("stroke", (d: CustomLinkData) => getLinkColor(d.type))
-      .attr("marker-end", (d: CustomLinkData) => `url(#arrow-${d.type})`); // Dynamic marker
+      .attr("stroke-width", (d) => Math.sqrt(d.value) + 1.5)
+      .attr("stroke", (d) => getLinkColor(d.type))
+      .attr("marker-end", (d) => `url(#arrow-${d.type})`); // Dynamic marker
 
     const node = svg.append("g")
       .attr("stroke", "#fff")
@@ -119,7 +113,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
       .attr("r", d => 12 + Math.sqrt(d.valuation) / 2)
       .attr("fill", d => getNodeColor(d.status))
       .attr("cursor", "pointer")
-      .call(drag(simulation) as any)
+      .call(drag(simulation) )
       .on("click", (_event, d) => {
           const original = data.nodes.find(n => n.id === d.id);
           if(original) onNodeClick(original);
@@ -153,22 +147,22 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
 
     simulation.on("tick", () => {
       link
-        .attr("x1", d => (d.source as NodeData).x!)
-        .attr("y1", d => (d.source as NodeData).y!)
-        .attr("x2", d => (d.target as NodeData).x!)
-        .attr("y2", d => (d.target as NodeData).y!);
+        .attr("x1", d => (d.source ).x)
+        .attr("y1", d => (d.source ).y)
+        .attr("x2", d => (d.target ).x)
+        .attr("y2", d => (d.target ).y);
 
       node
-        .attr("cx", d => d.x!)
-        .attr("cy", d => d.y!);
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
       
       label
-        .attr("x", d => d.x!)
-        .attr("y", d => d.y!);
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
 
       valLabel
-        .attr("x", d => d.x!)
-        .attr("y", d => d.y!);
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
     });
 
   }, [data, width, height, onNodeClick, filterMode]);
@@ -180,19 +174,19 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     };
   }, [renderGraph]);
 
-  const drag = (simulation: d3.Simulation<NodeData, undefined>) => {
-    function dragstarted(_event: any) {
+  const drag = (simulation) => {
+    function dragstarted(_event) {
       if (!_event.active) simulation.alphaTarget(0.3).restart();
       _event.subject.fx = _event.subject.x;
       _event.subject.fy = _event.subject.y;
     }
     
-    function dragged(_event: any) {
+    function dragged(_event) {
       _event.subject.fx = _event.x;
       _event.subject.fy = _event.y;
     }
     
-    function dragended(_event: any) {
+    function dragended(_event) {
       if (!_event.active) simulation.alphaTarget(0);
       _event.subject.fx = null;
       _event.subject.fy = null;

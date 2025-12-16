@@ -18,5 +18,5 @@
     "esModuleInterop": true,
     "baseUrl": "."
   },
-  "include": ["./**/*.ts", "./**/*.tsx"]
+  "include": ["./**/*.ts", "./**/*.tsx", "index.jsx", "App.jsx", "components/AddNodeModal.jsx", "components/CompanyDetails.jsx", "components/ForceGraph.jsx"]
 }

@@ -3,29 +3,29 @@ import ForceGraph from './components/ForceGraph';
 import CompanyDetails from './components/CompanyDetails';
 import AddNodeModal from './components/AddNodeModal';
 import { INITIAL_DATA } from './constants';
-import { GraphData, NodeData, HealthStatus } from './types';
+import { CompanyType, HealthStatus} from './types';
 
 import {  RefreshCw,  AlertTriangle, Plus, Download, Upload,  Banknote, Cpu, Network } from 'lucide-react';
 
-const App: React.FC = () => {
-  const [data, setData] = useState<GraphData>(INITIAL_DATA);
-  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
+const App = () => {
+  const [data, setData] = useState(INITIAL_DATA);
+  const [selectedNode, setSelectedNode] = useState(null);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [simAnalysis, setSimAnalysis] = useState<string | null>(null);
+  const [simAnalysis, setSimAnalysis] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
   // Filter View State
-  const [viewMode, setViewMode] = useState<'all' | 'financial' | 'tech'>('all');
+  const [viewMode, setViewMode] = useState('all');
   
   // Ref for file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef(null);
   
   // AI Generation States
 
 
   // Responsive dimensions
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const graphContainerRef = React.useRef<HTMLDivElement>(null);
+  const graphContainerRef = React.useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,11 +41,11 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleNodeClick = (node: NodeData) => {
+  const handleNodeClick = (node) => {
     setSelectedNode(node);
   };
 
-  const handleUpdateNode = (updatedNode: NodeData) => {
+  const handleUpdateNode = (updatedNode) => {
       setData(prev => ({
           ...prev,
           nodes: prev.nodes.map(n => n.id === updatedNode.id ? updatedNode : n)
@@ -53,7 +53,7 @@ const App: React.FC = () => {
       setSelectedNode(updatedNode);
   };
 
-  const handleAddNode = (newNode: NodeData) => {
+  const handleAddNode = (newNode) => {
       setData(prev => ({
           ...prev,
           nodes: [...prev.nodes, newNode]
@@ -71,14 +71,14 @@ const App: React.FC = () => {
       link.click();
   };
 
-  const handleImportJSON = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImportJSON = (event) => {
       const fileReader = new FileReader();
       if (event.target.files && event.target.files[0]) {
           fileReader.readAsText(event.target.files[0], "UTF-8");
           fileReader.onload = e => {
               if (e.target?.result) {
                   try {
-                      const parsedData = JSON.parse(e.target.result as string);
+                      const parsedData = JSON.parse(e.target.result);
                       // Simple check to ensure it looks like our data
                       if (parsedData.nodes && parsedData.links) {
                           setData(parsedData);
@@ -113,13 +113,13 @@ const App: React.FC = () => {
 
 
 
-  const runSimulation = useCallback(async (startNodeId: string) => {
+  const runSimulation = useCallback(async (startNodeId) => {
     setIsSimulating(true);
     
     let currentNodes = [...data.nodes];
-    let impactedNodeIds = new Set<string>();
+    let impactedNodeIds = new Set();
     
-    const findIdx = (id: string) => currentNodes.findIndex(n => n.id === id);
+    const findIdx = (id) => currentNodes.findIndex(n => n.id === id);
 
     const patientZeroIdx = findIdx(startNodeId);
     if (patientZeroIdx === -1) return;
@@ -144,8 +144,8 @@ const App: React.FC = () => {
         const newNodes = [...currentNodes];
         
         for (const link of data.links) {
-            const targetId = typeof link.target === 'object' ? (link.target as any).id : link.target;
-            const sourceId = typeof link.source === 'object' ? (link.source as any).id : link.source;
+            const targetId = typeof link.target === 'object' ? (link.target ).id : link.target;
+            const sourceId = typeof link.source === 'object' ? (link.source ).id : link.source;
 
             const targetNode = newNodes.find(n => n.id === targetId);
             const sourceNode = newNodes.find(n => n.id === sourceId);
