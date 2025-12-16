@@ -106,79 +106,105 @@
       "source": "microsoft",
       "target": "openai",
       "value": 13,
-      "type": "investment"
+      "type": "investment",
+      "id": "link-0",
+      "name": "microsoft to openai"
     },
     {
       "source": "openai",
       "target": "nvidia",
       "value": 5,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-1",
+      "name": "openai to nvidia"
     },
     {
       "source": "openai",
       "target": "microsoft",
       "value": 4,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-2",
+      "name": "openai to microsoft"
     },
     {
       "source": "amazon",
       "target": "anthropic",
       "value": 4,
-      "type": "investment"
+      "type": "investment",
+      "id": "link-3",
+      "name": "amazon to anthropic"
     },
     {
       "source": "google",
       "target": "anthropic",
       "value": 2,
-      "type": "investment"
+      "type": "investment",
+      "id": "link-4",
+      "name": "google to anthropic"
     },
     {
       "source": "anthropic",
       "target": "google",
       "value": 1.5,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-5",
+      "name": "anthropic to google"
     },
     {
       "source": "nvidia",
       "target": "tsmc",
       "value": 20,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-6",
+      "name": "nvidia to tsmc"
     },
     {
       "source": "microsoft",
       "target": "nvidia",
       "value": 15,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-7",
+      "name": "microsoft to nvidia"
     },
     {
       "source": "google",
       "target": "nvidia",
       "value": 10,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-8",
+      "name": "google to nvidia"
     },
     {
       "source": "meta",
       "target": "nvidia",
       "value": 12,
-      "type": "dependency"
+      "type": "dependency",
+      "id": "link-9",
+      "name": "meta to nvidia"
     },
     {
       "source": "softbank",
       "target": "nvidia",
       "value": 1,
-      "type": "investment"
+      "type": "investment",
+      "id": "link-10",
+      "name": "softbank to nvidia"
     },
     {
       "source": "microsoft",
       "target": "mistral",
       "value": 0.2,
-      "type": "investment"
+      "type": "investment",
+      "id": "link-11",
+      "name": "microsoft to mistral"
     },
     {
       "source": "nvidia",
       "target": "mistral",
       "value": 0.1,
-      "type": "partnership"
+      "type": "partnership",
+      "id": "link-12",
+      "name": "nvidia to mistral"
     }
   ]
 }

@@ -12,7 +12,7 @@ interface ForceGraphProps {
 
 const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, height, filterMode = 'all' }) => {
   const svgRef = useRef<SVGSVGElement>(null);
-  const simulationRef = useRef<d3.Simulation<d3.SimulationNodeDatum, undefined> | null>(null);
+  const simulationRef = useRef<d3.Simulation<d3.SimulationNode, undefined> | null>(null);
 
   const getNodeColor = (status: HealthStatus) => {
     switch (status) {
@@ -58,8 +58,8 @@ const ForceGraph: React.FC<ForceGraphProps> = ({ data, onNodeClick, width, heigh
     d3.select(svgRef.current).selectAll("*").remove();
 
     // Deep copy data for D3
-    const nodes = filteredNodes.map(d => ({ ...d })) as (NodeData & d3.SimulationNodeDatum<NodeData>)[];
-    const links = filteredLinks.map(d => ({ ...d })) as (LinkData & d3.SimulationLinkDatum<LinkData>)[];
+    const nodes = filteredNodes.map(d => ({ ...d })) as (NodeData & d3.SimulationNode<NodeData>)[];
+    const links = filteredLinks.map(d => ({ ...d })) as (LinkData & d3.SimulationNode<LinkData>)[];
 
     const svg = d3.select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
