@@ -27,7 +27,7 @@ export interface NodeData extends d3.SimulationNodeDatum {
   index?: number;
 }
 
-export interface LinkData extends d3.SimulationLinkDatum<NodeData> {
+export interface LinkData extends d3.SimulationLinkDatum<d3.SimulationNodeDatum> {
   id: string;
   name: string;
   source: string;
