@@ -162,12 +162,12 @@
       "index": 15
     },
     {
-      "source": "sequoia",
+      "source": "sequoia-capital",
       "target": "mistral",
       "value": 0.3,
       "type": "investment",
       "id": "link-16",
-      "name": "sequoia to mistral",
+      "name": "sequoia-capital to mistral",
       "index": 16
     },
     {
